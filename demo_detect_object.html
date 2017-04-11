@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Demo Detect Object</title>
+</head>
+
+<body>
+    <h1>Let's automatically detect the object!</h1>
+    <input id="your-token" type="text" placeholder="paste token here">
+    <input id="custom-url" type="text" placeholder="custom url">
+    <div>
+        <div id='main-img'>
+            <img style='height: 100px'>
+        </div>
+        <pre id='answer' class="col-xs-8">
+        1) paste your token
+        2) press image
+        3) answer here
+        </pre>
+    </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="js/aiception.js"></script>
+    <script>
+    $(document).ready(function() {
+        var token = $("#your-token").val().trim();
+
+        // paste token
+        $("#your-token").bind("change keyup input", function() {
+            token = $("#your-token").val().trim();
+            console.log('token', token)
+            call_detect_object(token, "https://upload.wikimedia.org/wikipedia/commons/a/a8/A_classic_Black_pair_of_Converse_All_Stars_resting_on_the_Black_%26_White_Ed._Shoebox_%281998-2002%29.JPG")
+        });
+
+        // paste custom url
+        $("#custom-url").bind("keyup", function() {
+            custom_url = $("#custom-url").val().trim();
+            if (custom_url.length > 4)
+                call_detect_object(token, custom_url);
+        });
+
+        // simple wrapper
+        var call_detect_object = function(token, image_url) {
+            $('#answer').text('processing...');
+            $('#main-img').html("<img src='" + image_url + "'>");
+
+            detect_object(token, image_url, function(error, success) {
+                if (error) {
+                    console.log(error);
+                    $('#answer').text('error: ' + JSON.stringify(error, null, 2));
+                } else {
+                    console.log(success);
+                    $('#answer').text(JSON.stringify(success, null, 2));
+                }
+            });
+        }
+    });
+    </script>
+</body>
+
+</html>

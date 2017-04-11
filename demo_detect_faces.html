@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Demo Detect Faces</title>
+</head>
+
+<body>
+    <h1>Let's automatically detect all the faces!</h1>
+    <input id="your-token" type="text" placeholder="paste token here">
+    <input id="custom-url" type="text" placeholder="custom url">
+    <div>
+        <div id='main-img'>
+            <img style='height: 100px'>
+        </div>
+        <pre id='answer' class="col-xs-8">
+        1) paste your token
+        2) press image
+        3) answer here
+        </pre>
+    </div>
+    <canvas id="myCanvas" width="100" height="100" >
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="js/aiception.js"></script>
+    <script>
+    $(document).ready(function() {
+        var c=document.getElementById("myCanvas");
+        var ctx=c.getContext("2d");
+        var canvas = document.getElementById('myCanvas');
+        var context = canvas.getContext('2d');
+
+        var token = $("#your-token").val().trim();
+
+        // paste token
+        $("#your-token").bind("change keyup input", function() {
+            token = $("#your-token").val().trim();
+            console.log('token', token)
+            call_faces(token, "http://cdn.www.ministry-to-children.com/wp-content/uploads/2013/08/group-of-children.jpg")
+        });
+
+        // paste custom url
+        $("#custom-url").bind("keyup", function() {
+            custom_url = $("#custom-url").val().trim();
+            if (custom_url.length > 4)
+                call_faces(token, custom_url);
+        });
+
+        // simple wrapper
+        var call_faces = function(token, image_url) {
+            $('#answer').text('processing...');
+            $('#main-img').html("<img id='scream' src='" + image_url + "'>");
+            var img=document.getElementById("scream");  
+            canvas.height = img.clientHeight;
+            canvas.width = img.clientWidth;
+            context.clearRect(0, 0, canvas.width, canvas.height);
+            //ctx.drawImage(img,10,10); 
+            ctx.drawImage(img,0,0); 
+            
+
+
+            faces(token, image_url, function(error, success) {
+                if (error) {
+                    console.log(error);
+                    $('#answer').text('error: ' + JSON.stringify(error, null, 2));
+                } else {
+                    console.log(success);
+                    $('#answer').text(JSON.stringify(success, null, 2));
+                    
+
+                    for(faceid in success.answer.faces){
+                        face = success.answer.faces[faceid] 
+                        console.log('print face')
+                        console.log(face)
+                        drawRect(face[0], face[1], face[2]-face[0], face[3]-face[1])
+                        //drawRect(50,50,100,100);
+                    }
+                }
+            });
+        }
+
+        var drawRect = function(x, y, width, height){
+            context.beginPath();
+            context.rect(x, y, width, height);
+            context.lineWidth = 4;
+            context.strokeStyle = 'green';
+            context.stroke();
+        }
+    });
+    </script>
+</body>
+
+</html>

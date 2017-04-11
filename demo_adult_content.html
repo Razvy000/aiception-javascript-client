@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Demo Adult Content</title>
+</head>
+
+<body>
+    <h1>Is the image safe for work? 0.01=yes, 0.99=no</h1>
+    <input id="your-token" type="text" placeholder="paste token here">
+    <input id="custom-url" type="text" placeholder="custom url">
+    <div>
+        <div id='main-img'>
+            <img style='height: 100px'>
+        </div>
+        <pre id='answer' class="col-xs-8">
+        1) paste your token
+        2) press image
+        3) answer here
+        </pre>
+    </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="js/aiception.js"></script>
+    <script>
+    $(document).ready(function() {
+        var token = $("#your-token").val().trim();
+
+        // paste token
+        $("#your-token").bind("change keyup input", function() {
+            token = $("#your-token").val().trim();
+            console.log('token', token)
+            call_adult_content(token, "http://g02.a.alicdn.com/kf/HTB1lkhsHVXXXXbTXVXXq6xXFXXXy/Blue-Bandage-Women-Sexy-Swimwear-One-Piece-Swimsuit-Female-Swimming-Suits-Bathing-Suit-Swim-Wear-Swimsuits.jpg")
+        });
+
+        // paste custom url
+        $("#custom-url").bind("keyup", function() {
+            custom_url = $("#custom-url").val().trim();
+            if (custom_url.length > 4)
+                call_adult_content(token, custom_url);
+        });
+
+        // simple wrapper
+        var call_adult_content = function(token, image_url) {
+            $('#answer').text('processing...');
+            $('#main-img').html("<img src='" + image_url + "'>");
+
+            adult_content(token, image_url, function(error, success) {
+                if (error) {
+                    console.log(error);
+                    $('#answer').text('error: ' + JSON.stringify(error, null, 2));
+                } else {
+                    console.log(success);
+                    $('#answer').text(JSON.stringify(success, null, 2));
+                }
+            });
+        }
+    });
+    </script>
+</body>
+
+</html>
